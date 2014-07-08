@@ -29,11 +29,12 @@ import org.apache.http.protocol.HttpService;
             super();
             this.httpservice = httpservice;
             this.conn = conn;
+            System.out.println("\tConnection handler thread created");
         }
 
         @Override
         public void run() {
-            System.out.println("New connection thread");
+            System.out.println("\tNew connection handler thread is running");
             HttpContext context = new BasicHttpContext(null);
             try {
                 while (!Thread.interrupted() && this.conn.isOpen()) {

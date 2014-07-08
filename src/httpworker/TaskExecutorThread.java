@@ -23,17 +23,16 @@ import org.apache.http.protocol.HttpContext;
         TaskExecutorThread(String taskToProcess) {
             super();
             this.taskToProcess = taskToProcess;
+            System.out.println("\t\tTask executor thread created");
         }
 
         @Override
         public void run() {
-            System.out.println("New connection thread");
+            System.out.println("\t\t Task executor thread is running the following command: " + taskToProcess);
             HttpContext context = new BasicHttpContext(null);
             try {
-                while (!Thread.interrupted()) {
                     Process process = Runtime.getRuntime().exec(taskToProcess);
                     process.waitFor();
-                }
             } catch (IOException ex) {
                 System.err.println("I/O error: " + ex.getMessage());
 

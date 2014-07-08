@@ -38,8 +38,9 @@ import java.util.concurrent.Executors;
             this.connFactory = DefaultBHttpServerConnectionFactory.INSTANCE;
             this.serversocket = sf != null ? sf.createServerSocket(port) : new ServerSocket(port);
             this.httpService = httpService;
+            // only 4 connections can run concurrently
             connectionHandlerExecutor = Executors.newFixedThreadPool(4);
-
+            System.out.println("Request Listener Thread created");
         }
 
         @Override
@@ -47,22 +48,20 @@ import java.util.concurrent.Executors;
             System.out.println("Listening on port " + this.serversocket.getLocalPort());
             while (!Thread.interrupted()) {
                 try {
-                    System.out.println("print #1");
                     // Set up HTTP connection
                     Socket socket = this.serversocket.accept();
                     System.out.println("Incoming connection from " + socket.getInetAddress());
                     HttpServerConnection conn = this.connFactory.createConnection(socket);
 
-                    // Start taskExecutor thread         
                     //Thread t = new TaskExecutorThread(this.httpService, conn);
+                    // Initialize the pool
                     Thread connectionHandler = new ConnectionHandlerThread(this.httpService, conn);             
                     
                     connectionHandler.setDaemon(true);
                     //System.out.println("print #2");
                     connectionHandlerExecutor.execute(connectionHandler);
-
+                    System.out.println("\tConnection Handler Thread created");
                     //t.start();
-                    System.out.println("print #3");
                 } catch (InterruptedIOException ex) {
                     break;
                 } catch (IOException e) {
@@ -71,7 +70,8 @@ import java.util.concurrent.Executors;
                     break;
                 }
             }
-            
+            // when the listener is interupted shutdown the pool
+            // and wait for any Connection Handler threads still running
             connectionHandlerExecutor.shutdown();
             while (!connectionHandlerExecutor.isTerminated()) {
             }

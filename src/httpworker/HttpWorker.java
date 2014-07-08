@@ -8,7 +8,6 @@ package httpworker;
 
 import java.net.URL;
 import java.security.KeyStore;
-import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -26,10 +25,9 @@ import org.apache.http.protocol.ResponseDate;
 import org.apache.http.protocol.ResponseServer;
 import org.apache.http.protocol.UriHttpRequestHandlerMapper;
 
-
 /**
  *
- * @author anantoni
+ * @author thomas
  */
 public class HttpWorker {
      
@@ -39,10 +37,10 @@ public class HttpWorker {
      */
     public static void main(String[] args) throws Exception {
         int fixedExecutorSize = 4;
+        
         //Creating fixed size executor
-        ThreadPoolExecutor taskExecutor = new ThreadPoolExecutor(fixedExecutorSize, fixedExecutorSize,0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<>());
+        ThreadPoolExecutor taskExecutor = new ThreadPoolExecutor(fixedExecutorSize, fixedExecutorSize, 0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<>());
 
-        // TODO code application logic here
         int port = 8080;
 
         // Set up the HTTP protocol processor
@@ -60,30 +58,20 @@ public class HttpWorker {
         HttpService httpService = new HttpService(httpproc, reqistry);
 
         SSLServerSocketFactory sf = null;
-        if (port == 8443) {
-            // Initialize SSL context
-            ClassLoader cl = ElementalHttpServer.class.getClassLoader();
-            URL url = cl.getResource("my.keystore");
-            if (url == null) {
-                System.out.println("Keystore not found");
-                System.exit(1);
-            }
-            KeyStore keystore  = KeyStore.getInstance("jks");
-            keystore.load(url.openStream(), "secret".toCharArray());
-            KeyManagerFactory kmfactory = KeyManagerFactory.getInstance(
-                    KeyManagerFactory.getDefaultAlgorithm());
-            kmfactory.init(keystore, "secret".toCharArray());
-            KeyManager[] keymanagers = kmfactory.getKeyManagers();
-            SSLContext sslcontext = SSLContext.getInstance("TLS");
-            sslcontext.init(keymanagers, null, null);
-            sf = sslcontext.getServerSocketFactory();
-        }
+        // SSL code removed as it is not needed
 
+        // create a thread to listen for possible client available connections
         Thread t = new RequestListenerThread(port, httpService, sf);
-        System.out.println("Thread created");
+        System.out.println("Request Listener Thread created");
         t.setDaemon(false);
         t.start();
+        
+        // main thread should wait for the listener to exit before shutdown the
+        // task executor pool
         t.join();
+        
+        // shutdown task executor pool and wait for any taskExecutor thread
+        // still running
         taskExecutor.shutdown();
         while (!taskExecutor.isTerminated()) {
         }

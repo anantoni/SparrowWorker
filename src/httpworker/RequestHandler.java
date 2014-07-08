@@ -10,7 +10,11 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 import java.util.concurrent.ThreadPoolExecutor;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpEntityEnclosingRequest;
 import org.apache.http.HttpException;
@@ -49,23 +53,34 @@ class RequestHandler implements HttpRequestHandler  {
 
         if (request instanceof HttpEntityEnclosingRequest) {
             HttpEntity httpEntity = ((HttpEntityEnclosingRequest) request).getEntity();
-            //byte[] entityContent = EntityUtils.toByteArray(entity);
             String entity = EntityUtils.toString(httpEntity);
             System.out.println("Incoming entity content (string): " + entity);
 
             // Parse HTTP request
             Map<String,String> requestArgs = parseHttpSchedulerRequest(entity);
             StringEntity stringEntity;
-            // If task requst
+            // If task request
             if (requestArgs.size() == 2) {
                 assert requestArgs.containsKey("job-id") && requestArgs.containsKey("task-command");
-                System.out.println("Adding task command to pool");
+    
                 String taskToProcess = requestArgs.get("task-command");
+                // replace all + with spaces
+                taskToProcess = taskToProcess.replaceAll("\\+", " ");
                 Thread taskExecutorThread = new TaskExecutorThread(taskToProcess);
+                Future threadMonitor = taskExecutor.submit(taskExecutorThread);
+                
+                try {
+                    // the main thread should wait until the submitted thread
+                    // finishes its computation
+                    threadMonitor.get();
+                } catch (InterruptedException | ExecutionException ex) {
+                    Logger.getLogger(RequestHandler.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                
                 response.setStatusCode(HttpStatus.SC_OK);
                 stringEntity = new StringEntity("result:success");
-            }      
-            // If probe request
+            } 
+            // if probe or heartbeat respond immediatelly
             else if (requestArgs.size() == 1) {
                 assert requestArgs.containsKey("probe") || requestArgs.containsKey("heartbeat");
                 response.setStatusCode(HttpStatus.SC_OK);
@@ -88,9 +103,6 @@ class RequestHandler implements HttpRequestHandler  {
             response.setEntity(stringEntity); 
         }
 
-        // TODO: wait for result of task processing before returning the result to the scheduler
-
-        StringEntity stringEntity = new StringEntity("result:success");
 
     }
 
