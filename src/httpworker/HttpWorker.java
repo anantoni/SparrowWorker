@@ -6,16 +6,10 @@
 
 package httpworker;
 
-import java.net.URL;
-import java.security.KeyStore;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
-import javax.net.ssl.KeyManager;
-import javax.net.ssl.KeyManagerFactory;
-import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLServerSocketFactory;
-import org.apache.http.examples.ElementalHttpServer;
 import org.apache.http.protocol.HttpProcessor;
 import org.apache.http.protocol.HttpProcessorBuilder;
 import org.apache.http.protocol.HttpService;
@@ -41,7 +35,7 @@ public class HttpWorker {
         //Creating fixed size executor
         ThreadPoolExecutor taskExecutor = new ThreadPoolExecutor(fixedExecutorSize, fixedExecutorSize, 0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<>());
 
-        int port = 8080;
+        int port = 51000;
 
         // Set up the HTTP protocol processor
         HttpProcessor httpproc = HttpProcessorBuilder.create()
@@ -60,7 +54,7 @@ public class HttpWorker {
         SSLServerSocketFactory sf = null;
         // SSL code removed as it is not needed
 
-        // create a thread to listen for possible client available connections
+        // create a thread to listen for possible scheduler available connections
         Thread t = new RequestListenerThread(port, httpService, sf);
         System.out.println("Request Listener Thread created");
         t.setDaemon(false);
@@ -73,10 +67,8 @@ public class HttpWorker {
         // shutdown task executor pool and wait for any taskExecutor thread
         // still running
         taskExecutor.shutdown();
-        while (!taskExecutor.isTerminated()) {
-        }
+        while (!taskExecutor.isTerminated()) {}
+        
         System.out.println("Finished all task executor threads");
-
-    }
-    
+    }    
 }
