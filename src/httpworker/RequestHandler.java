@@ -85,11 +85,13 @@ class RequestHandler implements HttpRequestHandler  {
                         assert requestArgs.containsKey("probe") || requestArgs.containsKey("heartbeat");
                         response.setStatusCode(HttpStatus.SC_OK);
 
+                        // probe response
                         if (requestArgs.containsKey("probe")){
                             int workedTasks = taskExecutor.getPoolSize() + taskExecutor.getActiveCount();
                             response.setStatusCode(HttpStatus.SC_OK);
                             stringEntity = new StringEntity(Integer.toString(workedTasks));
                         }
+                        // heartbeat response
                         else{
                             response.setStatusCode(HttpStatus.SC_OK);
                             stringEntity = new StringEntity("result:success");

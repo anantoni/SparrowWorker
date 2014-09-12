@@ -35,7 +35,7 @@ public class HttpWorker {
         //Creating fixed size executor
         ThreadPoolExecutor taskExecutor = new ThreadPoolExecutor(fixedExecutorSize, fixedExecutorSize, 0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<>());
 
-        int port = 51000;
+        int port = 52000;
 
         // Set up the HTTP protocol processor
         HttpProcessor httpproc = HttpProcessorBuilder.create()
