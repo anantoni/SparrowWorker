@@ -32,10 +32,17 @@ public class HttpWorker {
     public static void main(String[] args) throws Exception {
         int fixedExecutorSize = 4;
         
-        //Creating fixed size executor
+        if (args.length != 2) {
+            System.err.println("Invalid command line parameters for worker");
+            System.exit(-1);
+        }
+        
+        // Set worker mode
+        String mode = args[1];
+        // Creating fixed size executor
         ThreadPoolExecutor taskExecutor = new ThreadPoolExecutor(fixedExecutorSize, fixedExecutorSize, 0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<>());
 
-        int port = 52000;
+        int port = Integer.parseInt(args[0]);
 
         // Set up the HTTP protocol processor
         HttpProcessor httpproc = HttpProcessorBuilder.create()
@@ -44,10 +51,14 @@ public class HttpWorker {
                 .add(new ResponseContent())
                 .add(new ResponseConnControl()).build();
 
-        // Set up request handlers
+        // Set up request handler (either generic or late binding)
         UriHttpRequestHandlerMapper reqistry = new UriHttpRequestHandlerMapper();
-        reqistry.register("*", new RequestHandler(taskExecutor));
+        if (mode.equals("--late")) 
+            reqistry.register("*", new LateBindingRequestHandler(taskExecutor));
+        else
+            reqistry.register("*", new GenericRequestHandler(taskExecutor));
 
+        
         // Set up the HTTP service
         HttpService httpService = new HttpService(httpproc, reqistry);
 

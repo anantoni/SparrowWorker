@@ -8,6 +8,7 @@ package utils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import org.apache.http.HttpEntity;
@@ -29,8 +30,8 @@ public class HttpComm {
     
     public static String lateBindingProbeResponse(String schedulerURL, String jobID) throws Exception {
         
-        Map<String, String> results = new HashMap<>();
-        Map<String, String> postArguments = new HashMap();
+        Map<String, String> results = new LinkedHashMap<>();
+        Map<String, String> postArguments = new LinkedHashMap();
         
         postArguments.put( "probe-response", "yes" );
         postArguments.put( "job-id", jobID );

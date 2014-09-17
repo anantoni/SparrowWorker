@@ -26,19 +26,20 @@ public class ProbeResponseThread extends Thread{
             this.jobID = jobID;
             this.taskExecutor = taskExecutor;
         }
-
         
         @Override
         public void run() {
+            System.out.println("Responding to probe - scheduler url: " + schedulerURL + " job id: " + jobID);
             try {
                 String taskToProcess = HttpComm.lateBindingProbeResponse(schedulerURL, jobID);
-                
+                System.out.println( "Task to process: " + taskToProcess);
                 // parse task to process
                 if (taskToProcess.equals("NOOP")) {
                         //do nothing
                 }
                 else {
-                    taskExecutor.submit(new TaskExecutorThread(taskToProcess));
+                    String[] pieces = taskToProcess.split("&");
+                    taskExecutor.submit(new TaskExecutorThread(pieces[1]));
             }
                 } catch (Exception ex) {
                 Logger.getLogger(ProbeResponseThread.class.getName()).log(Level.SEVERE, null, ex);

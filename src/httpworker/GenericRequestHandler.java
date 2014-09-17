@@ -7,7 +7,7 @@
 package httpworker;
 
 import java.io.IOException;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
@@ -31,11 +31,11 @@ import org.apache.http.util.EntityUtils;
  *
  * @author thomas
  */
-class RequestHandler implements HttpRequestHandler  {
+class GenericRequestHandler implements HttpRequestHandler  {
         private final ThreadPoolExecutor taskExecutor;         
 
-        // Pass reference to the requestsQueue to the RequestHandler
-         public RequestHandler(ThreadPoolExecutor taskExecutor) {
+        // Pass reference to the requestsQueue to the GenericRequestHandler
+         public GenericRequestHandler(ThreadPoolExecutor taskExecutor) {
                 super();
                 this.taskExecutor = taskExecutor;
         }
@@ -74,7 +74,7 @@ class RequestHandler implements HttpRequestHandler  {
                                 // finishes its computation
                                 threadMonitor.get();
                         } catch (InterruptedException | ExecutionException ex) {
-                                Logger.getLogger(RequestHandler.class.getName()).log(Level.SEVERE, null, ex);
+                                Logger.getLogger(GenericRequestHandler.class.getName()).log(Level.SEVERE, null, ex);
                         }
 
                         response.setStatusCode(HttpStatus.SC_OK);
@@ -111,7 +111,7 @@ class RequestHandler implements HttpRequestHandler  {
     // job-id=1&task-command=sleep+240s
     Map<String, String> parseHttpSchedulerRequest(String httpRequest) {
         String[] requestArguments = httpRequest.split("&");
-        Map<String, String> argsMap = new HashMap<>();
+        Map<String, String> argsMap = new LinkedHashMap<>();
 
         if (requestArguments.length != 2 && requestArguments.length != 1 ) {
             System.err.println("Invalid HTTP request: " + httpRequest);
