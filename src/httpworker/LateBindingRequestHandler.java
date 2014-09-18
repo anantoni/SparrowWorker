@@ -41,10 +41,9 @@ class LateBindingRequestHandler implements HttpRequestHandler  {
         }
 
         @Override
-        public void handle(
-                final HttpRequest request,
-                final HttpResponse response,
-                final HttpContext context) throws HttpException, IOException {
+        public void handle( final HttpRequest request,
+                                          final HttpResponse response,
+                                          final HttpContext context) throws HttpException, IOException {
 
             String method = request.getRequestLine().getMethod().toUpperCase(Locale.ENGLISH);
             if (!method.equals("GET") && !method.equals("HEAD") && !method.equals("POST")) {
@@ -61,13 +60,12 @@ class LateBindingRequestHandler implements HttpRequestHandler  {
                 StringEntity stringEntity;
                 // If task request
                 if (requestArgs.size() == 3) {
-                        System.out.println("Received probe");
-                        response.setStatusCode(HttpStatus.SC_OK);
+                    System.out.println("Received probe");
+                    response.setStatusCode(HttpStatus.SC_OK);
 
-                        // probe response
-                        
-                        Thread probeResponseThread = new ProbeResponseThread(requestArgs.get("scheduler-url"), requestArgs.get("job-id"), taskExecutor);
-                        Future threadMonitor = taskExecutor.submit(probeResponseThread);
+                    // probe response
+                    Thread probeResponseThread = new ProbeResponseThread(requestArgs.get("scheduler-url"), requestArgs.get("job-id"), taskExecutor);
+                    Future threadMonitor = taskExecutor.submit(probeResponseThread);
 
 //                        try {
 //                                // the main thread should wait until the submitted thread
@@ -76,21 +74,20 @@ class LateBindingRequestHandler implements HttpRequestHandler  {
 //                        } catch (InterruptedException | ExecutionException ex) {
 //                                Logger.getLogger(LateBindingRequestHandler.class.getName()).log(Level.SEVERE, null, ex);
 //                        }
-                        response.setStatusCode(HttpStatus.SC_OK);
-                        stringEntity = new StringEntity("result:success");
+                    response.setStatusCode(HttpStatus.SC_OK);
+                    stringEntity = new StringEntity("result:success");
                 } 
                 // if probe or heartbeat respond immediatelly
                 else if (requestArgs.size() == 1) {
-                        assert requestArgs.containsKey("heartbeat");
-                        response.setStatusCode(HttpStatus.SC_OK);
+                    assert requestArgs.containsKey("heartbeat");
+                    response.setStatusCode(HttpStatus.SC_OK);
 
-                        response.setStatusCode(HttpStatus.SC_OK);
-                        stringEntity = new StringEntity("result:success");
+                    response.setStatusCode(HttpStatus.SC_OK);
+                    stringEntity = new StringEntity("result:success");
                 }
-
                 else{
-                        response.setStatusCode(HttpStatus.SC_OK);
-                        stringEntity = new StringEntity("result:fail");
+                    response.setStatusCode(HttpStatus.SC_OK);
+                    stringEntity = new StringEntity("result:fail");
                 }
 
                 response.setEntity(stringEntity); 

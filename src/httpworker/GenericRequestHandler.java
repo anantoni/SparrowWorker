@@ -61,12 +61,14 @@ class GenericRequestHandler implements HttpRequestHandler  {
                 StringEntity stringEntity;
                 // If task request
                 if (requestArgs.size() == 2) {
-                        assert requestArgs.containsKey("job-id") && requestArgs.containsKey("task-command");
-
+                        assert requestArgs.containsKey("job-id") && requestArgs.containsKey("task-id") && requestArgs.containsKey("task-command");
+                        int jobID = Integer.parseInt(requestArgs.get("job-id"));
+                        int taskID = Integer.parseInt(requestArgs.get("task-id"));
                         String taskToProcess = requestArgs.get("task-command");
+                        
                         // replace all + with spaces
                         taskToProcess = taskToProcess.replaceAll("\\+", " ");
-                        Thread taskExecutorThread = new TaskExecutorThread(taskToProcess);
+                        Thread taskExecutorThread = new TaskExecutorThread(jobID, taskID, taskToProcess);
                         Future threadMonitor = taskExecutor.submit(taskExecutorThread);
 
                         try {
@@ -97,12 +99,11 @@ class GenericRequestHandler implements HttpRequestHandler  {
                             stringEntity = new StringEntity("result:success");
                         }
                 }
-
+                // else fail
                 else{
                         response.setStatusCode(HttpStatus.SC_OK);
                         stringEntity = new StringEntity("result:fail");
                 }
-
                 response.setEntity(stringEntity); 
         }
     }
@@ -113,30 +114,38 @@ class GenericRequestHandler implements HttpRequestHandler  {
         String[] requestArguments = httpRequest.split("&");
         Map<String, String> argsMap = new LinkedHashMap<>();
 
-        if (requestArguments.length != 2 && requestArguments.length != 1 ) {
+        if (requestArguments.length != 3 && requestArguments.length != 1 ) {
             System.err.println("Invalid HTTP request: " + httpRequest);
             return null; 
         }
-        else if (requestArguments.length == 2) {
-                int counter = 0;
-                for ( String arg : requestArguments ) {
-                    String[] keyValuePair = arg.split("=");
+        else if (requestArguments.length == 3) {
+            int counter = 0;
+            for ( String arg : requestArguments ) {
+                String[] keyValuePair = arg.split("=");
                 if (counter == 0) {
-                        if ( keyValuePair[0].equals("job-id") ) {
-                                assert keyValuePair[1].matches("[0-9]+");
-                                argsMap.put( keyValuePair[0], keyValuePair[1]);
-                        }
-                        else {
-                            System.err.println("Invalid argument - expecting job-id");
-                        }
+                    if ( keyValuePair[0].equals("job-id") ) {
+                            assert keyValuePair[1].matches("[0-9]+");
+                            argsMap.put( keyValuePair[0], keyValuePair[1]);
+                    }
+                    else {
+                        System.err.println("Invalid argument - expecting job-id");
+                    }
                 }
                 else if (counter == 1) {
-                        if ( keyValuePair[0].equals("task-command") ) {
-                            argsMap.put( keyValuePair[0], keyValuePair[1]);
-                        }
-                        else {
-                            System.err.println("Invalid argument - expecting task-commands");
-                        }
+                    if ( keyValuePair[0].equals("task-id")) {
+                        argsMap.put( keyValuePair[0], keyValuePair[1]);
+                    }
+                    else {
+                        System.err.println("Invalid argument - expecting task-id");
+                    }
+                }
+                else if (counter == 2) {
+                    if ( keyValuePair[0].equals("task-command") ) {
+                        argsMap.put( keyValuePair[0], keyValuePair[1]);
+                    }
+                    else {
+                        System.err.println("Invalid argument - expecting task-commands");
+                    }
                 }
                 counter++;
             }

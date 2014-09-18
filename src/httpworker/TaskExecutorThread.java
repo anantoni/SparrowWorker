@@ -11,6 +11,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
+import utils.StatsLog;
 
 /**
  *
@@ -18,27 +19,35 @@ import org.apache.http.protocol.HttpContext;
  */
     class TaskExecutorThread extends Thread {
 
-        private final String taskToProcess;
+        private final String taskCommand;
+        private final int jobID;
+        private final int taskID;
 
-        TaskExecutorThread(String taskToProcess) {
+        TaskExecutorThread(int taskID, String taskCommand) {
             super();
-            this.taskToProcess = taskToProcess;
-            System.out.println("\t\tTask executor thread created");
+            this.taskCommand = taskCommand;
+            this.jobID = -1;
+            this.taskID = taskID;
+            //System.out.println("\t\tTask executor thread created");
+        }
+        
+        TaskExecutorThread(int jobID, int taskID, String taskCommand) {
+            super();
+            this.taskCommand = taskCommand;
+            this.taskID = taskID;
+            this.jobID = jobID;
         }
 
         @Override
         public void run() {
-            System.out.println("\t\t Task executor thread is running the following command: " + taskToProcess);
+            System.out.println("\t\t Task executor thread is running the following command: " + taskCommand);
             HttpContext context = new BasicHttpContext(null);
             try {
-                    Process process = Runtime.getRuntime().exec(taskToProcess);
+                    Process process = Runtime.getRuntime().exec(taskCommand);
                     process.waitFor();
-            } catch (IOException ex) {
-                System.err.println("I/O error: " + ex.getMessage());
-
-            } catch (InterruptedException ex) {
+            } catch (InterruptedException | IOException ex) {
                 Logger.getLogger(TaskExecutorThread.class.getName()).log(Level.SEVERE, null, ex);
             }
+            StatsLog.writeToLog("Job #" + jobID + " task # " + taskID + " command: " + taskCommand + " finished");
         }
-
     }
