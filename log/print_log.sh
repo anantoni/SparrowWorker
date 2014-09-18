@@ -1,9 +1,0 @@
-grep -i "job #1" stats.txt | wc -l
-grep -i "job #2" stats.txt | wc -l
-grep -i "job #3" stats.txt | wc -l
-grep -i "job #4" stats.txt | wc -l
-grep -i "job #5" stats.txt | wc -l
-grep -i "job #6" stats.txt | wc -l
-grep -i "job #7" stats.txt | wc -l
-grep -i "job #8" stats.txt | wc -l
-grep -i "job #9" stats.txt | wc -l
