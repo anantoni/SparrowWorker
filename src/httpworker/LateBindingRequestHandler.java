@@ -102,10 +102,10 @@ class LateBindingRequestHandler implements HttpRequestHandler  {
         
         String result = "";
         try {
-                result = java.net.URLDecoder.decode(httpRequest, "UTF-8");
-                System.out.println("Decoded request: " + result);
+            result = java.net.URLDecoder.decode(httpRequest, "UTF-8");
+            System.out.println("Decoded request: " + result);
         } catch (UnsupportedEncodingException ex) {
-                Logger.getLogger(LateBindingRequestHandler.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(LateBindingRequestHandler.class.getName()).log(Level.SEVERE, null, ex);
         }
         String[] requestArguments = result.split("&");
         
@@ -114,28 +114,28 @@ class LateBindingRequestHandler implements HttpRequestHandler  {
             return null; 
         }
         else if (requestArguments.length == 3) {
-                int counter = 0;
-                for ( String arg : requestArguments ) {
-                    String[] keyValuePair = arg.split("=");
+            int counter = 0;
+            for ( String arg : requestArguments ) {
+                String[] keyValuePair = arg.split("=");
                 if (counter == 0) {
-                        assert keyValuePair[0].equals("probe");
-                        argsMap.put("probe", "yes");
+                    assert keyValuePair[0].equals("probe");
+                    argsMap.put("probe", "yes");
                 }
                 else if (counter == 1) {
-                        assert keyValuePair[0].equals("scheduler-url");
-                        argsMap.put("scheduler-url", keyValuePair[1]);
+                    assert keyValuePair[0].equals("scheduler-url");
+                    argsMap.put("scheduler-url", keyValuePair[1]);
                 }
                 else if (counter == 2) {
-                        assert keyValuePair[0].equals("job-id");
-                        argsMap.put("job-id", keyValuePair[1]);
+                    assert keyValuePair[0].equals("job-id");
+                    argsMap.put("job-id", keyValuePair[1]);
                 }
                 counter++;
             }
         }
         else if (requestArguments.length == 1) {
-                String[] keyValuePair = requestArguments[0].split("=");
-                assert keyValuePair[0].equals("heartbeat");
-                argsMap.put( keyValuePair[0], keyValuePair[1]);
+            String[] keyValuePair = requestArguments[0].split("=");
+            assert keyValuePair[0].equals("heartbeat");
+            argsMap.put( keyValuePair[0], keyValuePair[1]);
         }
         return argsMap;
     }
