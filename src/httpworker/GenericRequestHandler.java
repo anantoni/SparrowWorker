@@ -60,7 +60,7 @@ class GenericRequestHandler implements HttpRequestHandler  {
                 Map<String,String> requestArgs = parseHttpSchedulerRequest(entity);
                 StringEntity stringEntity;
                 // If task request
-                if (requestArgs.size() == 2) {
+                if (requestArgs.size() == 3) {
                         assert requestArgs.containsKey("job-id") && requestArgs.containsKey("task-id") && requestArgs.containsKey("task-command");
                         int jobID = Integer.parseInt(requestArgs.get("job-id"));
                         int taskID = Integer.parseInt(requestArgs.get("task-id"));
