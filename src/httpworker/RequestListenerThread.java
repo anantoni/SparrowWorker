@@ -57,9 +57,10 @@ import java.util.concurrent.Executors;
                     // Initialize the pool
                     Thread connectionHandler = new ConnectionHandlerThread(this.httpService, conn);             
                     
-                    connectionHandler.setDaemon(true);
+                    connectionHandler.setDaemon(false);
                     //System.out.println("print #2");
-                    connectionHandlerExecutor.execute(connectionHandler);
+                    //connectionHandlerExecutor.execute(connectionHandler);
+                    connectionHandler.start();
                     System.out.println("\tConnection Handler Thread created");
                     //t.start();
                 } catch (InterruptedIOException ex) {
