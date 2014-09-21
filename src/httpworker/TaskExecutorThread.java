@@ -7,6 +7,8 @@
 package httpworker;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.http.protocol.BasicHttpContext;
@@ -48,6 +50,9 @@ import utils.StatsLog;
             } catch (InterruptedException | IOException ex) {
                 Logger.getLogger(TaskExecutorThread.class.getName()).log(Level.SEVERE, null, ex);
             }
-            StatsLog.writeToLog("Job #" + jobID + " task # " + taskID + " command: " + taskCommand + " finished");
+            Date dNow = new Date( );
+            SimpleDateFormat ft = 
+      new SimpleDateFormat ("E yyyy.MM.dd 'at' hh:mm:ss a zzz");
+            StatsLog.writeToLog( ft.format(dNow) + " Job #" + jobID + " task # " + taskID + " command: " + taskCommand + " finished");
         }
     }
