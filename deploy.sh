@@ -1,2 +1,1 @@
-java -jar dist/SparrowWorker.jar 52000 --random
-
+java -jar dist/SparrowWorker.jar $1 $2 &
