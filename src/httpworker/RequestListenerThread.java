@@ -59,9 +59,9 @@ import java.util.concurrent.Executors;
                     
                     connectionHandler.setDaemon(false);
                     //System.out.println("print #2");
-                    //connectionHandlerExecutor.execute(connectionHandler);
-                    connectionHandler.start();
-                    System.out.println("\tConnection Handler Thread created");
+                    connectionHandlerExecutor.execute(connectionHandler);
+                    //connectionHandler.start();
+                    //System.out.println("\tConnection Handler Thread created");
                     //t.start();
                 } catch (InterruptedIOException ex) {
                     break;

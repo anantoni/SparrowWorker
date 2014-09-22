@@ -71,6 +71,9 @@ class GenericRequestHandler implements HttpRequestHandler  {
                         Thread taskExecutorThread = new TaskExecutorThread(jobID, taskID, taskToProcess);
                         Future threadMonitor = taskExecutor.submit(taskExecutorThread);
 
+                        response.setStatusCode(HttpStatus.SC_OK);
+                        stringEntity = new StringEntity("result:success");
+                        
                         try {
                                 // the main thread should wait until the submitted thread
                                 // finishes its computation
@@ -78,9 +81,11 @@ class GenericRequestHandler implements HttpRequestHandler  {
                         } catch (InterruptedException | ExecutionException ex) {
                                 Logger.getLogger(GenericRequestHandler.class.getName()).log(Level.SEVERE, null, ex);
                         }
+                        
+//                        response.setStatusCode(HttpStatus.SC_OK);
+//                        stringEntity = new StringEntity("result:success");
 
-                        response.setStatusCode(HttpStatus.SC_OK);
-                        stringEntity = new StringEntity("result:success");
+                        
                 } 
                 // if probe or heartbeat respond immediatelly
                 else if (requestArgs.size() == 1) {

@@ -6,9 +6,11 @@
 
 package httpworker;
 
+import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.http.protocol.BasicHttpContext;
@@ -42,17 +44,18 @@ import utils.StatsLog;
 
         @Override
         public void run() {
-            System.out.println("\t\t Task executor thread is running the following command: " + taskCommand);
-            HttpContext context = new BasicHttpContext(null);
+            //System.out.println("\t\t Task executor thread is running the following command: " + taskCommand);
             try {
-                    Process process = Runtime.getRuntime().exec(taskCommand);
-                    process.waitFor();
+                    //Process process = Runtime.getRuntime().exec(taskCommand);
+                    //process.waitFor();
+                    ProcessBuilder pb = new ProcessBuilder(taskCommand);
+                    Process p  = new ProcessBuilder("/bin/bash", System.getProperty("user.dir") +"/" + taskCommand).start();
+                    p.waitFor();
             } catch (InterruptedException | IOException ex) {
                 Logger.getLogger(TaskExecutorThread.class.getName()).log(Level.SEVERE, null, ex);
             }
             Date dNow = new Date( );
-            SimpleDateFormat ft = 
-      new SimpleDateFormat ("E yyyy.MM.dd 'at' hh:mm:ss a zzz");
+            SimpleDateFormat ft = new SimpleDateFormat ("E yyyy.MM.dd 'at' hh:mm:ss a zzz");
             StatsLog.writeToLog( ft.format(dNow) + " Job #" + jobID + " task # " + taskID + " command: " + taskCommand + " finished");
         }
     }

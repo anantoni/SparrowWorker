@@ -6,7 +6,7 @@
 
 s=0 # here sum
 
-for((i=1; i <=400000 ; i++))
+for((i=1; i <=800000 ; i++))
 do
     let s=$s+$i
 done
