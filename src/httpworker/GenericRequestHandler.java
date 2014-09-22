@@ -61,27 +61,27 @@ class GenericRequestHandler implements HttpRequestHandler  {
                 StringEntity stringEntity;
                 // If task request
                 if (requestArgs.size() == 3) {
-                        assert requestArgs.containsKey("job-id") && requestArgs.containsKey("task-id") && requestArgs.containsKey("task-command");
-                        int jobID = Integer.parseInt(requestArgs.get("job-id"));
-                        int taskID = Integer.parseInt(requestArgs.get("task-id"));
-                        String taskToProcess = requestArgs.get("task-command");
-                        
-                        // replace all + with spaces
-                        taskToProcess = taskToProcess.replaceAll("\\+", " ");
-                        Thread taskExecutorThread = new TaskExecutorThread(jobID, taskID, taskToProcess);
-                        Future threadMonitor = taskExecutor.submit(taskExecutorThread);
+                    assert requestArgs.containsKey("job-id") && requestArgs.containsKey("task-id") && requestArgs.containsKey("task-command");
+                    int jobID = Integer.parseInt(requestArgs.get("job-id"));
+                    int taskID = Integer.parseInt(requestArgs.get("task-id"));
+                    String taskToProcess = requestArgs.get("task-command");
 
-                        response.setStatusCode(HttpStatus.SC_OK);
-                        stringEntity = new StringEntity("result:success");
-                        
-                        try {
-                                // the main thread should wait until the submitted thread
-                                // finishes its computation
-                                threadMonitor.get();
-                        } catch (InterruptedException | ExecutionException ex) {
-                                Logger.getLogger(GenericRequestHandler.class.getName()).log(Level.SEVERE, null, ex);
-                        }
-                        
+                    // replace all + with spaces
+                    taskToProcess = taskToProcess.replaceAll("\\+", " ");
+                    Thread taskExecutorThread = new TaskExecutorThread(jobID, taskID, taskToProcess);
+                    Future threadMonitor = taskExecutor.submit(taskExecutorThread);
+
+                    response.setStatusCode(HttpStatus.SC_OK);
+                    stringEntity = new StringEntity("result:success");
+
+                    try {
+                            // the main thread should wait until the submitted thread
+                            // finishes its computation
+                            threadMonitor.get();
+                    } catch (InterruptedException | ExecutionException ex) {
+                            Logger.getLogger(GenericRequestHandler.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+
 //                        response.setStatusCode(HttpStatus.SC_OK);
 //                        stringEntity = new StringEntity("result:success");
 
