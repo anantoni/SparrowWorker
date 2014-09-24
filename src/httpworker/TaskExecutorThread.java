@@ -6,22 +6,18 @@
 
 package httpworker;
 
-import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.apache.http.protocol.BasicHttpContext;
-import org.apache.http.protocol.HttpContext;
 import utils.StatsLog;
 
 /**
  *
  * @author thomas
  */
-    class TaskExecutorThread extends Thread {
+    class TaskExecutorThread implements Runnable {
 
         private final String taskCommand;
         private final int jobID;

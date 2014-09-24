@@ -68,19 +68,19 @@ class GenericRequestHandler implements HttpRequestHandler  {
 
                     // replace all + with spaces
                     taskToProcess = taskToProcess.replaceAll("\\+", " ");
-                    Thread taskExecutorThread = new TaskExecutorThread(jobID, taskID, taskToProcess);
-                    Future threadMonitor = taskExecutor.submit(taskExecutorThread);
+                    Runnable taskExecutorThread = new TaskExecutorThread(jobID, taskID, taskToProcess);
+                    taskExecutor.execute(taskExecutorThread);
 
                     response.setStatusCode(HttpStatus.SC_OK);
                     stringEntity = new StringEntity("result:success");
 
-                    try {
-                            // the main thread should wait until the submitted thread
-                            // finishes its computation
-                            threadMonitor.get();
-                    } catch (InterruptedException | ExecutionException ex) {
-                            Logger.getLogger(GenericRequestHandler.class.getName()).log(Level.SEVERE, null, ex);
-                    }
+//                    try {
+//                            // the main thread should wait until the submitted thread
+//                            // finishes its computation
+//                            threadMonitor.get();
+//                    } catch (InterruptedException | ExecutionException ex) {
+//                            Logger.getLogger(GenericRequestHandler.class.getName()).log(Level.SEVERE, null, ex);
+//                    }
 
 //                        response.setStatusCode(HttpStatus.SC_OK);
 //                        stringEntity = new StringEntity("result:success");
