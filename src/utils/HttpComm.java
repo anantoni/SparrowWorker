@@ -12,6 +12,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import org.apache.http.HttpEntity;
+import org.apache.http.HttpVersion;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -45,6 +46,7 @@ public class HttpComm {
         try (CloseableHttpClient httpclient = HttpClients.createDefault()) {
             
                 HttpPost httpPost = new HttpPost( workerURL );
+                httpPost.setProtocolVersion(HttpVersion.HTTP_1_1);
                 List <NameValuePair> nvps = new ArrayList <>();
                 postArguments.keySet().stream().forEach((key) -> { 
                     nvps.add( new BasicNameValuePair( key, postArguments.get(key) ) );

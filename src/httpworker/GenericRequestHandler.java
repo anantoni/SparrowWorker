@@ -94,7 +94,7 @@ class GenericRequestHandler implements HttpRequestHandler  {
 
                         // probe response
                         if (requestArgs.containsKey("probe")){
-                            int workedTasks = taskExecutor.getPoolSize() + taskExecutor.getActiveCount();
+                            int workedTasks = (int)(taskExecutor.getTaskCount() - taskExecutor.getCompletedTaskCount());
                             response.setStatusCode(HttpStatus.SC_OK);
                             stringEntity = new StringEntity(Integer.toString(workedTasks));
                         }
