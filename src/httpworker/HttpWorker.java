@@ -40,7 +40,7 @@ public class HttpWorker {
         // Set worker mode
         String mode = args[1];
         // Creating fixed size executor
-        ThreadPoolExecutor taskExecutor = new ThreadPoolExecutor(fixedExecutorSize, fixedExecutorSize, 0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<>());
+        ThreadPoolExecutor taskExecutor = new ThreadPoolExecutor(fixedExecutorSize, fixedExecutorSize, 0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>());
 
         int port = Integer.parseInt(args[0]);
 
