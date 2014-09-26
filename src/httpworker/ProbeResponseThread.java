@@ -43,9 +43,8 @@ public class ProbeResponseThread extends Thread{
                 String[] pieces = taskToProcess.split("&");
                 // create new task executor thread to execute command and submit to task
                 // executor
-                taskExecutor.submit(new TaskExecutorThread( Integer.parseInt(pieces[0]), 
-                                                                                            Integer.parseInt(pieces[1]),
-                                                                                            pieces[2]));
+                taskExecutor.submit(new TaskExecutorThread( Integer.parseInt(pieces[0]) 
+                                                            ));
             }
         } catch (Exception ex) {
             Logger.getLogger(ProbeResponseThread.class.getName()).log(Level.SEVERE, null, ex);
