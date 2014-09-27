@@ -29,7 +29,6 @@ import org.apache.http.protocol.HttpService;
             super();
             this.httpservice = httpservice;
             this.conn = conn;
-            System.out.println("\tConnection handler thread created");
         }
 
         @Override
