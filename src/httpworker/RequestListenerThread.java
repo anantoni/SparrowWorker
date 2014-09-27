@@ -50,7 +50,7 @@ import java.util.concurrent.Executors;
                 try {
                     // Set up HTTP connection
                     Socket socket = this.serversocket.accept();
-                    System.out.println("Incoming connection from " + socket.getInetAddress());
+                    //System.out.println("Incoming connection from " + socket.getInetAddress());
                     HttpServerConnection conn = this.connFactory.createConnection(socket);
 
                     //Thread t = new TaskExecutorThread(this.httpService, conn);

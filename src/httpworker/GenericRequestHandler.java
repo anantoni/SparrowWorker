@@ -54,7 +54,7 @@ class GenericRequestHandler implements HttpRequestHandler  {
             if (request instanceof HttpEntityEnclosingRequest) {
                 HttpEntity httpEntity = ((HttpEntityEnclosingRequest) request).getEntity();
                 String entity = EntityUtils.toString(httpEntity);
-                System.out.println("Incoming entity content (string): " + entity);
+                //System.out.println("Incoming entity content (string): " + entity);
 
                 // Parse HTTP request
                 Map<String,String> requestArgs = parseHttpSchedulerRequest(entity);
