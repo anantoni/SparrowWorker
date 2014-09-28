@@ -10,11 +10,7 @@ import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
 import java.util.concurrent.ThreadPoolExecutor;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpEntityEnclosingRequest;
 import org.apache.http.HttpException;
@@ -26,6 +22,7 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.protocol.HttpRequestHandler;
 import org.apache.http.util.EntityUtils;
+import static utils.HttParser.parseHttpSchedulerRequest;
 
 /**
  *
@@ -69,20 +66,26 @@ class GenericRequestHandler implements HttpRequestHandler  {
                         int taskDuration = Integer.parseInt(requestArgs.get("task-duration"));
                         Runnable taskExecutorThread = new TaskExecutorThread(taskDuration);
                         taskExecutor.execute(taskExecutorThread);
-
-                        response.setStatusCode(HttpStatus.SC_OK);
                         stringEntity = new StringEntity("result:success");
                     }
                     else if (requestArgs.containsKey("probe")){
                         int workedTasks = (int)(taskExecutor.getTaskCount() - taskExecutor.getCompletedTaskCount());
-                        response.setStatusCode(HttpStatus.SC_OK);
                         stringEntity = new StringEntity(Integer.toString(workedTasks));
                     }
                     // heartbeat response
                     else{
-                        response.setStatusCode(HttpStatus.SC_OK);
                         stringEntity = new StringEntity("result:success");
                     }
+                }
+                else if (requestArgs.size() == 2) {
+                        assert requestArgs.containsKey("task-duration") && requestArgs.containsKey("task-quantity");
+                        int taskDuration = Integer.parseInt(requestArgs.get("task-duration"));
+                        int taskQuantity = Integer.parseInt(requestArgs.get("task-quantity"));
+                        for (int i = 0; i < taskQuantity; i++) {
+                            Runnable taskExecutorThread = new TaskExecutorThread(taskDuration);
+                            taskExecutor.execute(taskExecutorThread);
+                        }
+                        stringEntity = new StringEntity("result:success");
                 }
                 // else fail
                 else{
@@ -91,51 +94,6 @@ class GenericRequestHandler implements HttpRequestHandler  {
                 }
                 response.setEntity(stringEntity); 
         }
-    }
-
-    // Parse HTTP requests with the following form: 
-    // job-id=1&task-command=sleep+240s
-    Map<String, String> parseHttpSchedulerRequest(String httpRequest) {
-        String[] requestArguments = httpRequest.split("&");
-        Map<String, String> argsMap = new LinkedHashMap<>();
-
-        if (requestArguments.length != 1 && requestArguments.length != 1 ) {
-            System.err.println("Invalid HTTP request: " + httpRequest);
-            return null; 
-        }
-        else if (requestArguments.length == 3) {
-            int counter = 0;
-            for ( String arg : requestArguments ) {
-                String[] keyValuePair = arg.split("=");
-                if (counter == 0) {
-                    if ( keyValuePair[0].equals("task-duration") ) {
-                        argsMap.put( keyValuePair[0], keyValuePair[1]);
-                    }
-                    else {
-                        System.err.println("Invalid argument - expecting task-commands");
-                    }
-                }
-                counter++;
-            }
-        }
-        else if (requestArguments.length == 1) {
-                String[] keyValuePair = requestArguments[0].split("=");
-                switch (keyValuePair[0]) {
-                    case "probe":
-                        argsMap.put(keyValuePair[0], keyValuePair[1]);
-                        break;
-                    case "heartbeat":
-                        argsMap.put(keyValuePair[0], keyValuePair[1]);
-                        break;
-                    case "task-duration":
-                        argsMap.put(keyValuePair[0], keyValuePair[1]);
-                        break;
-                    default:
-                        System.err.println("Invalid argument - expecting probe or heartbeat request");
-                        break;
-            }
-        }
-        return argsMap;
     }
 }
 
