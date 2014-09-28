@@ -48,9 +48,8 @@ public class HttpComm {
                 HttpPost httpPost = new HttpPost( workerURL );
                 httpPost.setProtocolVersion(HttpVersion.HTTP_1_1);
                 List <NameValuePair> nvps = new ArrayList <>();
-                postArguments.keySet().stream().forEach((key) -> { 
+                for (String key :postArguments.keySet())
                     nvps.add( new BasicNameValuePair( key, postArguments.get(key) ) );
-                });
                 //for ( String key : postArguments.keySet() ) 
                 //nvps.add( new BasicNameValuePair( key, postArguments.get(key) ) );
 
