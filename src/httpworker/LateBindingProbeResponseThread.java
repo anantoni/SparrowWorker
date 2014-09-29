@@ -31,10 +31,12 @@ public class LateBindingProbeResponseThread extends Thread{
     public void run() {
         // responding to a probe in late binding suggests that the worker is idle and availabe 
         // to receive tasks for execution
-        System.out.println("Responding to probe - scheduler url: " + schedulerURL + " job id: " + jobID);
+       
         try {
+//            System.out.println("Responding to probe - scheduler url: " + schedulerURL + " job id: " + jobID);
             String taskToProcess = HttpComm.lateBindingProbeResponse(schedulerURL, jobID);
-            System.out.println( "Task to process: " + taskToProcess);
+//            System.out.println("returned from late binding probe response");
+//            System.out.println( "Task to process: " + taskToProcess);
             // parse task to process
             if (!taskToProcess.equals("NOOP")) {
                 // create new task executor thread to execute command and submit to task

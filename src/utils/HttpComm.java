@@ -53,73 +53,94 @@ public class HttpComm {
         return result;
     }
     
-    public static String Post( String schedulerURL, Map<String, String> postArguments) throws Exception {
-        HttpPost httpPost = new HttpPost(schedulerURL);
+     public static String Post( String workerURL, Map<String, String> postArguments) throws Exception {
+        HttpPost httpPost = new HttpPost(workerURL);
         httpPost.setProtocolVersion(HttpVersion.HTTP_1_1);
         List <NameValuePair> nvps = new ArrayList <>();
         for (String key :postArguments.keySet())
             nvps.add( new BasicNameValuePair( key, postArguments.get(key) ) );
 
         httpPost.setEntity(new UrlEncodedFormEntity(nvps));
-        String s = "";
-        
-        HttpContext context = HttpClientContext.create();
-        CloseableHttpResponse response = httpClient.execute(httpPost, context);
-        try {
+
+        try (CloseableHttpResponse response = httpClient.execute(httpPost)) {
+            //System.out.println(response.getStatusLine());
             HttpEntity entity = response.getEntity();
-            s = EntityUtils.toString(entity);
+            String s = EntityUtils.toString(entity);
             EntityUtils.consume(entity);
-        }   
-        catch (IOException ex) {
-            Logger.getLogger(HttpComm.class.getName()).log(Level.SEVERE, null, ex);
-        } 
+            return s;
+        }
         finally {
-            response.close();
             httpPost.releaseConnection();
         }
-        return s;
     }
     
-    public static String AsyncPost( String schedulerURL, Map<String, String> postArguments) throws Exception {
-        HttpPost httpPost = new HttpPost(schedulerURL);
-        httpPost.setProtocolVersion(HttpVersion.HTTP_1_1);
-        List <NameValuePair> nvps = new ArrayList <>();
-        for (String key :postArguments.keySet())
-            nvps.add( new BasicNameValuePair( key, postArguments.get(key) ) );
-
-        httpPost.setEntity(new UrlEncodedFormEntity(nvps));
-        String s = "";
-        
-        HttpContext context = HttpClientContext.create();
-        CloseableHttpResponse response = httpClient.execute(httpPost, context);
-        
-        String inputLine = "" ;
-        BufferedReader in = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
-        try {
-              while ((inputLine = in.readLine()) != null) {
-                     System.out.println(inputLine);
-              }
-              in.close();
-         } catch (IOException e) {
-              e.printStackTrace();
-         } finally {
-            response.close();
-            httpPost.releaseConnection();
-        }
-         s = inputLine;
+//    public static String Post( String schedulerURL, Map<String, String> postArguments) throws Exception {
+//        HttpPost httpPost = new HttpPost(schedulerURL);
+//        httpPost.setProtocolVersion(HttpVersion.HTTP_1_1);
+//        List <NameValuePair> nvps = new ArrayList <>();
+//        for (String key :postArguments.keySet())
+//            nvps.add( new BasicNameValuePair( key, postArguments.get(key) ) );
+//
+//        httpPost.setEntity(new UrlEncodedFormEntity(nvps));
+//        String s = "";
+//        
+//        HttpContext context = HttpClientContext.create();
+//        CloseableHttpResponse response = httpClient.execute(httpPost, context);
 //        try {
 //            HttpEntity entity = response.getEntity();
 //            s = EntityUtils.toString(entity);
 //            EntityUtils.consume(entity);
+//            response.close();
 //        }   
 //        catch (IOException ex) {
 //            Logger.getLogger(HttpComm.class.getName()).log(Level.SEVERE, null, ex);
 //        } 
 //        finally {
+//            httpPost.releaseConnection();
+//        }
+//        return s;
+//    }
+//    
+//    public static String AsyncPost( String schedulerURL, Map<String, String> postArguments) throws Exception {
+//        HttpPost httpPost = new HttpPost(schedulerURL);
+//        httpPost.setProtocolVersion(HttpVersion.HTTP_1_1);
+//        List <NameValuePair> nvps = new ArrayList <>();
+//        for (String key :postArguments.keySet())
+//            nvps.add( new BasicNameValuePair( key, postArguments.get(key) ) );
+//
+//        httpPost.setEntity(new UrlEncodedFormEntity(nvps));
+//        String s = "";
+//        
+//        HttpContext context = HttpClientContext.create();
+//        CloseableHttpResponse response = httpClient.execute(httpPost, context);
+//        
+//        String inputLine = "" ;
+//        BufferedReader in = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
+//        try {
+//              while ((inputLine = in.readLine()) != null) {
+//                     System.out.println(inputLine);
+//              }
+//              in.close();
+//         } catch (IOException e) {
+//              e.printStackTrace();
+//         } finally {
 //            response.close();
 //            httpPost.releaseConnection();
 //        }
-        return s;
-    }
+//         s = inputLine;
+////        try {
+////            HttpEntity entity = response.getEntity();
+////            s = EntityUtils.toString(entity);
+////            EntityUtils.consume(entity);
+////        }   
+////        catch (IOException ex) {
+////            Logger.getLogger(HttpComm.class.getName()).log(Level.SEVERE, null, ex);
+////        } 
+////        finally {
+////            response.close();
+////            httpPost.releaseConnection();
+////        }
+//        return s;
+//    }
     
 }
