@@ -7,7 +7,6 @@
 package httpworker;
 
 import java.io.IOException;
-import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -22,7 +21,7 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.protocol.HttpRequestHandler;
 import org.apache.http.util.EntityUtils;
-import static utils.HttParser.parseHttpSchedulerRequest;
+import static utils.HttpParser.parseHttpSchedulerRequest;
 
 /**
  *

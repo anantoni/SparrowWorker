@@ -16,12 +16,12 @@ import utils.HttpComm;
  */
 
 // This is used for late binding
-public class ProbeResponseThread extends Thread{
+public class LateBindingProbeResponseThread extends Thread{
     private String schedulerURL = null;
     private String jobID = null;
     private ThreadPoolExecutor taskExecutor = null;
 
-    public ProbeResponseThread(String schedulerURL, String jobID, ThreadPoolExecutor taskExecutor ) {
+    public LateBindingProbeResponseThread(String schedulerURL, String jobID, ThreadPoolExecutor taskExecutor ) {
         this.schedulerURL = schedulerURL;
         this.jobID = jobID;
         this.taskExecutor = taskExecutor;
@@ -36,18 +36,13 @@ public class ProbeResponseThread extends Thread{
             String taskToProcess = HttpComm.lateBindingProbeResponse(schedulerURL, jobID);
             System.out.println( "Task to process: " + taskToProcess);
             // parse task to process
-            if (taskToProcess.equals("NOOP")) {
-                    //do nothing
-            }
-            else {
-                String[] pieces = taskToProcess.split("&");
+            if (!taskToProcess.equals("NOOP")) {
                 // create new task executor thread to execute command and submit to task
                 // executor
-                taskExecutor.submit(new TaskExecutorThread( Integer.parseInt(pieces[0]) 
-                                                            ));
+                taskExecutor.execute(new TaskExecutorThread(Integer.parseInt(taskToProcess)));
             }
         } catch (Exception ex) {
-            Logger.getLogger(ProbeResponseThread.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(LateBindingProbeResponseThread.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 }
